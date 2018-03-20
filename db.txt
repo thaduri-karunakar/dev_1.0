@@ -1,0 +1,93 @@
+import pymssql
+import csv
+import os,sys
+reload(sys)
+sys.setdefaultencoding('utf8')
+
+####################################################### SQL Connection  ##################################################
+
+def db():
+    
+    
+    conn = pymssql.connect(server='10.112.78.172', user='sa', password='India@123', database='CA_UIM_Karunakar_8_51')
+    cursor = conn.cursor()
+
+####################################################### Getting data from table ##################################################
+    cursor.execute('''SELECT
+    dbo.NAS_ALARMS.sid,
+    dbo.NAS_ALARMS.subsys,
+    dbo.NAS_ALARMS.source,
+    dbo.NAS_ALARMS.robot,
+    dbo.NAS_ALARMS.nimid,
+    dbo.NAS_ALARMS.hostname,
+    dbo.CM_CONFIGURATION_ITEM_METRIC_DEFINITION.met_type,
+    dbo.NAS_ALARMS.met_id,
+    dbo.CM_COMPUTER_SYSTEM.dedicated,
+    dbo.NAS_ALARMS.[level],
+    dbo.CM_COMPUTER_SYSTEM.ip,
+    dbo.CM_CONFIGURATION_ITEM.ci_id,
+    dbo.NAS_ALARMS.[domain],
+    dbo.NAS_ALARMS.custom_1,
+    dbo.CM_CONFIGURATION_ITEM_METRIC_DEFINITION.unit_type,
+    dbo.NAS_ALARMS.custom_2,
+    dbo.NAS_ALARMS.custom_3,
+    dbo.NAS_ALARMS.custom_5,
+    dbo.NAS_ALARMS.origin,
+    dbo.NAS_ALARMS.custom_4,
+    dbo.NAS_ALARMS.supp_key,
+    dbo.CM_CONFIGURATION_ITEM_METRIC_DEFINITION.ci_type,
+    dbo.NAS_ALARMS.severity,
+    dbo.CM_DEVICE.cs_id,
+    dbo.CM_CONFIGURATION_ITEM.ci_name,
+    dbo.NAS_ALARMS.message,
+    dbo.NAS_ALARMS.prid,
+    dbo.NAS_ALARMS.dev_id,
+    dbo.NAS_ALARMS.user_tag2,
+    dbo.NAS_ALARMS.hub,
+dbo.NAS_ALARMS.user_tag1
+
+
+
+
+
+FROM
+dbo.NAS_ALARMS
+INNER JOIN dbo.CM_CONFIGURATION_ITEM ON dbo.NAS_ALARMS.dev_id = dbo.CM_CONFIGURATION_ITEM.dev_id
+INNER JOIN dbo.CM_CONFIGURATION_ITEM_METRIC_DEFINITION ON dbo.CM_CONFIGURATION_ITEM.ci_type = dbo.CM_CONFIGURATION_ITEM_METRIC_DEFINITION.ci_type
+INNER JOIN dbo.CM_DEVICE ON dbo.CM_CONFIGURATION_ITEM.dev_id = dbo.CM_DEVICE.dev_id
+INNER JOIN dbo.CM_COMPUTER_SYSTEM ON dbo.CM_DEVICE.cs_id = dbo.CM_COMPUTER_SYSTEM.cs_id''')
+
+
+#tables = cursor.fetchall()
+    row = cursor.fetchall()
+    conn.close()
+
+
+####################################################### Getting columns names ##################################################
+    c_name = [i[0] for i in cursor.description]
+#print (c_name)
+
+####################################################### Writing  columns to csv ##################################################
+    f1 = open(r'db1.csv','wb+')
+    writer = csv.writer(f1)
+    writer.writerow(c_name)
+    f1.close()
+
+####################################################### writing rows to csv ##################################################
+
+    f2 = open(r'db1.csv','ab')
+    for r in row:
+        writer = csv.writer(f2)
+        writer.writerow(r)
+    f2.close()
+    cursor.close()
+
+
+
+
+
+
+
+
+
+
